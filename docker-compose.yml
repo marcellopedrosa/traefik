@@ -1,0 +1,30 @@
+services:
+  traefik:
+    image: traefik:v2.4
+    container_name: traefik
+    restart: always
+    command:
+      - "--providers.docker=true"
+      - "--log=true"
+      - "--log.level=DEBUG"
+      - "--accesslog.filePath=/var/log/traefik.log"
+      - "--providers.docker.exposedbydefault=false"
+#      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls.domains=lab.empresa.com.br"
+      - "--providers.file.filename=/etc/certs/tls.yml"
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+    ports:
+      - "81:8080"
+      - "443:443"
+      - "80:80"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/etc/certs:/etc/certs"
+      - "/var/log/traefik.log:/var/log/traefik.log"
+    networks:
+      - webapi
+networks:
+  webapi:
+    external: true
